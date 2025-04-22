@@ -15,12 +15,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.nutrifitai.data.ProfileData
+import com.example.nutrifitai.ui.ProfileViewModel
 
-@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun SetProfileScreen(
-    onGetStartedClick: (ProfileData) -> Unit
+    viewModel: ProfileViewModel,
+    onGetStartedClick: () -> Unit // Simplified to trigger navigation only
 ) {
     var weight by remember { mutableStateOf("") }
     var height by remember { mutableStateOf("") }
@@ -35,7 +38,8 @@ fun SetProfileScreen(
         weight.toFloatOrNull() != null &&
                 height.toFloatOrNull() != null &&
                 age.toIntOrNull() != null &&
-                gender != null
+                gender != null &&
+                goal != Goal.None
     }
 
     val scrollState = rememberScrollState()
@@ -202,7 +206,7 @@ fun SetProfileScreen(
         Button(
             onClick = {
                 if (isFormValid) {
-                    onGetStartedClick(
+                    viewModel.saveProfile(
                         ProfileData(
                             weight = weight.toFloat(),
                             height = height.toFloat(),
@@ -212,6 +216,7 @@ fun SetProfileScreen(
                             goal = goal
                         )
                     )
+                    onGetStartedClick()
                 }
             },
             enabled = isFormValid,
@@ -233,19 +238,10 @@ fun SetProfileScreen(
     }
 }
 
-// Data class to hold profile information
-data class ProfileData(
-    val weight: Float,
-    val height: Float,
-    val age: Int,
-    val gender: String,
-    val medicalHistory: String,
-    val goal: Goal
-)
-
 // Enum for goal options
 enum class Goal(val displayName: String) {
     WeightLoss("Weight Loss"),
     WeightGain("Weight Gain"),
     None("None")
 }
+
