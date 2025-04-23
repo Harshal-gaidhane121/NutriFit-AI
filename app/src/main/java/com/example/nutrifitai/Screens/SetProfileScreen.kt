@@ -1,6 +1,7 @@
 package com.example.nutrifitai.Screens
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -23,6 +24,7 @@ import com.example.nutrifitai.ui.ProfileViewModel
 @Composable
 fun SetProfileScreen(
     viewModel: ProfileViewModel,
+    context: Context,
     onGetStartedClick: () -> Unit // Simplified to trigger navigation only
 ) {
     var weight by remember { mutableStateOf("") }
@@ -38,8 +40,7 @@ fun SetProfileScreen(
         weight.toFloatOrNull() != null &&
                 height.toFloatOrNull() != null &&
                 age.toIntOrNull() != null &&
-                gender != null &&
-                goal != Goal.None
+                gender != null
     }
 
     val scrollState = rememberScrollState()
@@ -216,6 +217,10 @@ fun SetProfileScreen(
                             goal = goal
                         )
                     )
+                    with(context.getSharedPreferences("NutriFitPrefs", Context.MODE_PRIVATE).edit()) {
+                        putBoolean("isProfileSet", true)
+                        apply()
+                    }
                     onGetStartedClick()
                 }
             },

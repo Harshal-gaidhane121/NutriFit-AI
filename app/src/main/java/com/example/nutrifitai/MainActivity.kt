@@ -1,5 +1,6 @@
 package com.example.nutrifitai
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -19,6 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
+import com.example.nutrifitai.Screens.HomeScreen
 import com.example.nutrifitai.Screens.SetProfileScreen
 import com.example.nutrifitai.data.NutriFitDatabase
 import com.example.nutrifitai.data.ProfileRepository
@@ -41,16 +43,19 @@ class MainActivity : ComponentActivity() {
         // Initialize repository
         val repository = ProfileRepository(database.profileDao())
 
+        val sharedPreferences = getSharedPreferences("NutriFitPrefs", MODE_PRIVATE)
+        val isProfileSet = sharedPreferences.getBoolean("isProfileSet", false)
+
         setContent {
             NutriFitAITheme {
-                NutriFitNavigation(repository)
+                NutriFitNavigation(repository,isProfileSet, context = this)
             }
         }
     }
 }
 
 @Composable
-fun NutriFitNavigation(repository: ProfileRepository) {
+fun NutriFitNavigation(repository: ProfileRepository,isProfileSet: Boolean,context: Context) {
     val navController = rememberNavController()
     val viewModel: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(repository))
 
@@ -60,7 +65,7 @@ fun NutriFitNavigation(repository: ProfileRepository) {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "set_profile",
+            startDestination = if (isProfileSet) "home" else "set_profile",
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
@@ -72,32 +77,23 @@ fun NutriFitNavigation(repository: ProfileRepository) {
                         navController.navigate("home") {
                             popUpTo("set_profile") { inclusive = true }
                         }
-                    }
+                    },
+                    context = context
                 )
             }
             composable("home") {
-                HomeScreen()
+                HomeScreen(viewModel=viewModel,navController=navController)
+            }
+            composable("add") {
+                HomeScreen(viewModel=viewModel,navController=navController)
+            }
+            composable("recipes") {
+                HomeScreen(viewModel=viewModel,navController=navController)
+            }
+            composable("profile") {
+                HomeScreen(viewModel=viewModel,navController=navController)
             }
         }
-    }
-}
-
-@Composable
-fun HomeScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Welcome to NutriFit AI!",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            color = MaterialTheme.colorScheme.primary
-        )
     }
 }
 

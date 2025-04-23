@@ -3,7 +3,9 @@ package com.example.nutrifitai.data
 import com.example.nutrifitai.Screens.Goal
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 
+//,private val dailyTrackingDao: DailyTrackingDao
 class ProfileRepository(private val profileDao: ProfileDao) {
     suspend fun saveProfile(profile: ProfileData) {
         profileDao.insertProfile(
@@ -32,6 +34,33 @@ class ProfileRepository(private val profileDao: ProfileDao) {
             }
         }
     }
+
+//    suspend fun saveDailyTracking(
+//        profileId: Int,
+//        calories: Float,
+//        protein: Float,
+//        water: Float,
+//        carbs: Float,
+//        fats: Float,
+//        fiber: Float
+//    ) {
+//        dailyTrackingDao.insertTracking(
+//            DailyTrackingEntity(
+//                profileId = profileId,
+//                date = LocalDate.now().toString(),
+//                calories = calories,
+//                protein = protein,
+//                water = water,
+//                carbs = carbs,
+//                fats = fats,
+//                fiber = fiber
+//            )
+//        )
+//    }
+//
+//    fun getDailyTracking(profileId: Int, date: String): Flow<DailyTrackingEntity?> {
+//        return dailyTrackingDao.getTrackingForDate(profileId, date)
+//    }
 }
 
 // Reusing ProfileData from SetProfileScreen
